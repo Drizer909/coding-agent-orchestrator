@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: agent-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: agent
+        image: agent-coding:latest
+        command: ["/usr/local/bin/agent_entrypoint.sh", "Build me a todo app in React"]
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+      restartPolicy: Never
+      volumes:
+      - name: workspace
+        persistentVolumeClaim:
+          claimName: workspace-pvc
+  backoffLimit: 2 

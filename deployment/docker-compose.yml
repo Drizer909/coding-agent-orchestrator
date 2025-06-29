@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./jobs:/app/jobs
+    environment:
+      - JOBS_DIR=/app/jobs
+      - AGENT_IMAGE=agent-coding:latest
+    depends_on:
+      - agent-builder
+    restart: unless-stopped
+    networks:
+      - orchestrator-network
+
+  agent-builder:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: agent-coding:latest
+    command: ["echo", "Agent image built successfully"]
+    networks:
+      - orchestrator-network
+
+networks:
+  orchestrator-network:
+    driver: bridge
+
+volumes:
+  jobs:
+    driver: local 
